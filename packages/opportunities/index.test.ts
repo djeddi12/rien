@@ -1,0 +1,2 @@
+import{describe,expect,it}from"vitest";import{mineOpportunity}from"./index";
+describe("opportunity miner",()=>it("preserves evidence provenance",()=>{const o=mineOpportunity({title:"CRM for agencies",audience:"agencies",category:"software",evidence:[{id:"ev_1",source:"search",sourceType:"search",capturedAt:new Date().toISOString(),confidence:.8,payload:{}}],monetizationHypotheses:["affiliate"]});expect(o.evidenceIds).toEqual(["ev_1"]);expect(o.confidence).toBe(.8)}));
