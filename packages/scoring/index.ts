@@ -10,6 +10,7 @@ export type OpportunitySignals = {
 
 export type OpportunityScore = {
   total: number;
+  decision: "build" | "watch" | "reject";
   signals: OpportunitySignals;
 };
 
@@ -24,6 +25,7 @@ const WEIGHTS: Record<keyof OpportunitySignals, number> = {
 };
 
 function clamp(value: number): number {
+  if (!Number.isFinite(value)) return 0;
   return Math.max(0, Math.min(100, value));
 }
 
@@ -35,8 +37,11 @@ export function scoreOpportunity(signals: OpportunitySignals): OpportunityScore 
   const total = (Object.keys(WEIGHTS) as Array<keyof OpportunitySignals>)
     .reduce((sum, key) => sum + normalized[key] * WEIGHTS[key], 0);
 
+  const rounded = Math.round(total * 100) / 100;
+
   return {
-    total: Math.round(total * 100) / 100,
+    total: rounded,
+    decision: rounded >= 75 ? "build" : rounded >= 55 ? "watch" : "reject",
     signals: normalized,
   };
 }
