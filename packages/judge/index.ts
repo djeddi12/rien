@@ -15,3 +15,5 @@ export function adversarialJudge(opportunity:Opportunity,evidence:Evidence[]):Ju
  if(technical||painCount===0)return {verdict:"reject",confidence:.9,reasons};
  return {verdict:buyer&&painCount>=2?"pass":"watch",confidence:buyer&&painCount>=2?.8:.6,reasons};
 }
+
+export function isActionable(result:JudgeResult){return result.verdict!=="reject";}
