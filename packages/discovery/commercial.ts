@@ -1,6 +1,6 @@
 import type {Evidence,Opportunity} from "../core";
 import {mineOpportunity} from "../opportunities";
-import {adversarialJudge} from "../judge";
+import {adversarialJudge,isActionable} from "../judge";
 
 const BUYING_TERMS=["best","alternative","vs","pricing","price","buy","software","tool","service","for agencies","for business"];
 const PAIN_TERMS=["need","wish","missing","slow","broken","expensive","difficult","pain","cannot","can't","manual"];
@@ -26,5 +26,5 @@ export function discoverCommercialOpportunities(evidence:Evidence[]):Opportunity
    audience:String(items[0].payload.audience??"buyers"),
    category,evidence:items,
    monetizationHypotheses:["affiliate","lead_gen","digital_product"]
- })).sort((a,b)=>b.confidence-a.confidence);
+ })).filter(o=>isActionable(adversarialJudge(o,enriched))).sort((a,b)=>b.confidence-a.confidence);
 }
