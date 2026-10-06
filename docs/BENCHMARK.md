@@ -23,7 +23,7 @@ The same evaluator can consume normalized Evidence from real connectors. Live ev
 
 The benchmark is not a claim that every BUILD decision will make money.
 
-GitHub evidence demonstrates a problem signal, not willingness to pay. This follows the evidence-first principle used by comparable open-source opportunity miners. citeturn0search1
+GitHub evidence demonstrates a problem signal, not willingness to pay. This follows the evidence-first principle used by comparable open-source opportunity miners.
 
 A strong benchmark should therefore measure:
 1. Evidence completeness.
@@ -46,4 +46,4 @@ Do not enable autonomous external execution until the benchmark has:
 
 ## Research note
 
-AffiliateAgent demonstrates useful separation between niche research, product finding and performance analysis, while newer opportunity-mining projects emphasize evidence traceability and commercial validation. We borrow those architectural patterns, not proprietary code. citeturn0search0turn0search1
+AffiliateAgent demonstrates useful separation between niche research, product finding and performance analysis, while newer opportunity-mining projects emphasize evidence traceability and commercial validation. We borrow those architectural patterns, not proprietary code.
