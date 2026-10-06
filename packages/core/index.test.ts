@@ -1,0 +1,2 @@
+import {describe,expect,it} from "vitest"; import type {Evidence,Opportunity} from "./index";
+describe("core",()=>it("links opportunity to evidence",()=>{const e:Evidence={id:"ev_1",source:"test",sourceType:"test",capturedAt:new Date().toISOString(),confidence:.9,payload:{}};const o:Opportunity={id:"opp_1",title:"Test",audience:"agencies",category:"software",evidenceIds:[e.id],monetizationHypotheses:["affiliate"],createdAt:new Date().toISOString(),confidence:.9};expect(o.evidenceIds).toContain(e.id)}));
