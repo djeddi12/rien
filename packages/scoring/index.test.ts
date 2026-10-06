@@ -14,6 +14,7 @@ describe("scoreOpportunity", () => {
     });
 
     expect(result.total).toBe(81.6);
+    expect(result.decision).toBe("build");
   });
 
   it("clamps invalid signal ranges", () => {
@@ -29,5 +30,20 @@ describe("scoreOpportunity", () => {
 
     expect(result.signals.demand).toBe(100);
     expect(result.signals.commercialIntent).toBe(0);
+  });
+
+  it("does not allow NaN to poison the score", () => {
+    const result = scoreOpportunity({
+      demand: Number.NaN,
+      commercialIntent: 80,
+      competition: 80,
+      affiliateValue: 80,
+      contentGap: 80,
+      serpOpportunity: 80,
+      executionCost: 80,
+    });
+
+    expect(result.signals.demand).toBe(0);
+    expect(Number.isFinite(result.total)).toBe(true);
   });
 });
