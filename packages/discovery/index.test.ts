@@ -1,0 +1,2 @@
+import{describe,expect,it}from"vitest";import{discoverOpportunities}from"./index";
+describe("discovery",()=>it("ranks evidence-backed clusters",()=>{const e=(id:string,c:number)=>({id,source:"test",sourceType:"search",capturedAt:"2026-10-06",confidence:c,payload:{}});const r=discoverOpportunities([{title:"weak",audience:"a",category:"x",evidence:[e("1",.4)],monetizationHypotheses:["affiliate"]},{title:"strong",audience:"a",category:"x",evidence:[e("2",.9)],monetizationHypotheses:["affiliate"]}]);expect(r[0].title).toBe("strong")}));
