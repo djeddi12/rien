@@ -27,7 +27,9 @@ export async function collectLiveEvidence(config:LiveDiscoveryConfig,fetcher:typ
  for(const query of config.queries){
   if(all.length>=target) break;
   const signals=await discoverGitHubIssues({query,token:config.token,perPage:config.perQuery??20},fetcher);
-  for(const s of signals) all.push({...s,id:"github-"+String(all.length+1),capturedAt:s.capturedAt??new Date().toISOString()} as Evidence);
+  for(const s of signals){
+   all.push({...s,id:"github-"+String(all.length+1),capturedAt:new Date().toISOString()} as Evidence);
+  }
  }
  return deduplicateEvidence(normalizeSignals(all)).slice(0,target);
 }
