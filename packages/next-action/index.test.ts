@@ -1,0 +1,2 @@
+import{describe,expect,it}from"vitest";import{nextBestAction}from"./index";
+describe("next best action",()=>it("rewards evidence and learning",()=>{const r=nextBestAction({id:"e",opportunityId:"o",hypothesis:"h",action:"a",successMetric:"clicks",minimumObservationDays:7,stopCondition:"no signal",approvalRequired:true},{evidenceConfidence:1,effort:10,learningValue:90,risk:5});expect(r.priority).toBeGreaterThan(80)}));
