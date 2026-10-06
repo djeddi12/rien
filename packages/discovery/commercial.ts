@@ -1,5 +1,6 @@
 import type {Evidence,Opportunity} from "../core";
 import {mineOpportunity} from "../opportunities";
+import {adversarialJudge} from "../judge";
 
 const BUYING_TERMS=["best","alternative","vs","pricing","price","buy","software","tool","service","for agencies","for business"];
 const PAIN_TERMS=["need","wish","missing","slow","broken","expensive","difficult","pain","cannot","can't","manual"];
