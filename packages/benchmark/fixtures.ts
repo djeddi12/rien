@@ -12,7 +12,7 @@ export const benchmarkCases:BenchmarkCase[]=Array.from({length:100},(_,i)=>{
   category,
   audience:strong?"small agencies":"general users",
   title:strong?`Best ${category} alternative for teams`:`Workflow issue ${i+1}`,
-  evidence:[evidence(`e-${i+1}`,strong?"Pricing and alternative request":"General workflow discussion",category,strong?"small agencies":"general users",strong?.9:.55,strong?1:.35)],
+  evidence:[evidence(`e-${i+1}`,strong?"Pricing and alternative request":"General workflow discussion",category,strong?"small agencies":"general users",strong ? .9 : .55,strong?1:.35)],
   offers:strong?[{id:`offer-${i+1}`,merchant:"benchmark",product:category,category,model:"affiliate",commission:.3,recurring:i%2===0,lastVerifiedAt:"2026-10-06"}]:[]
  };
 });
