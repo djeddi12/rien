@@ -1,0 +1,2 @@
+import{describe,expect,it}from"vitest";import{planAssets}from"./index";
+describe("asset planner",()=>it("selects commercial assets",()=>{const r=planAssets({id:"o",title:"CRM",audience:"agencies",category:"software",evidenceIds:["e"],monetizationHypotheses:["affiliate"],createdAt:"",confidence:1},[{opportunityId:"o",offerId:"x",fitScore:100,economicsScore:80,evidenceIds:[],risks:[],verifiedAt:""}]);expect(r.assets).toContain("matcher");expect(r.assets).toContain("comparison")}));
