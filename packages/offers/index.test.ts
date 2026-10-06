@@ -1,0 +1,2 @@
+import{describe,expect,it}from"vitest";import{matchOffer}from"./index";
+describe("offer matching",()=>it("scores category fit",()=>{const m=matchOffer({id:"o",title:"CRM",audience:"agencies",category:"software",evidenceIds:[],monetizationHypotheses:["affiliate"],createdAt:"",confidence:1},{id:"x",merchant:"m",product:"p",category:"software",model:"affiliate",commission:.4,lastVerifiedAt:"2026-10-01"});expect(m.fitScore).toBe(100);expect(m.economicsScore).toBe(40)}));
