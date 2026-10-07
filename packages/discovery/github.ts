@@ -31,13 +31,23 @@ const NOISE_PATTERNS=[
 ];
 
 const NOISE_LABELS=new Set(["dependencies","automated","bot","stale"]);
+const NOISE_REPOSITORY_PATTERNS=[
+ /(?:^|[-_])(test|tests|demo|demos|example|examples|sample|samples|playground|sandbox|benchmark)(?:$|[-_])/i,
+ /(?:^|[-_])(bot|workflow|actions)(?:$|[-_])/i,
+];
 
 export function isGitHubIssueNoise(issue:GitHubIssue):boolean{
- const text=`${issue.title} ${issue.body??""}`;
- if(NOISE_PATTERNS.some(pattern=>pattern.test(text))) return true;
- if(issue.title.trim().split(/\s+/).filter(Boolean).length<8) return true;
+ const title=issue.title.trim();
+ const body=issue.body??"";
+ const text=issue.title+" "+body;
+ const repository=issue.repository_url.split("/repos/")[1]??issue.repository_url;
+ if(NOISE_PATTERNS.some(pattern=>pattern.test(title)||pattern.test(text))) return true;
+ if(title.split(/\s+/).filter(Boolean).length<8) return true;
  if(issue.user?.type?.toLowerCase()==="bot") return true;
  if((issue.labels??[]).some(label=>NOISE_LABELS.has(String(label.name??"").toLowerCase()))) return true;
+ if(NOISE_REPOSITORY_PATTERNS.some(pattern=>pattern.test(repository))) return true;
+ const normalizedBody=body.replace(/[`*_>#-]/g," ").replace(/https?:\/\/\S+/g," ").replace(/\s+/g," ").trim();
+ if(normalizedBody.length<20 && title.split(/\s+/).length<12) return true;
  return false;
 }
 
