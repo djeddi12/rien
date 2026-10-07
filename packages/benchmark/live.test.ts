@@ -11,7 +11,7 @@ describe("live benchmark",()=>{
   expect(result).toHaveLength(1);
  });
  it("returns ranked opportunities",async()=>{
-  const fetcher=async()=>new Response(JSON.stringify({items:Array.from({length:20},(_,i)=>({...issue(i+1),html_url:"https://github.com/acme/repo/issues/"+(i+1),title:"Need hosted automation dashboard for teams "+(i+1)}))}),{status:200});
+  const fetcher=async()=>new Response(JSON.stringify({items:Array.from({length:20},(_,i)=>({...issue(i+1),html_url:"https://github.com/acme/repo/issues/"+(i+1),title:"Need hosted automation dashboard for teams with reporting "+(i+1)}))}),{status:200});
   const rows=await runLiveBenchmark({queries:["q1"],perQuery:20,target:20},verifiedOfferCatalog,fetcher as typeof fetch);
   expect(rows.length).toBeGreaterThan(0);
   expect(rows[0].rank).toBe(1);
