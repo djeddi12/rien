@@ -2,9 +2,9 @@ import type {Opportunity,ValidationPlan} from "../core";
 
 function chooseType(o:Opportunity):ValidationPlan["type"]{
  const f=o.fingerprint;
- if(f?.commercialSignal>=.65 && o.monetizationHypotheses.includes("affiliate")) return "comparison";
- if(f?.painStrength>=.7) return "interactive_tool";
- if(f?.buyerSignal>=.5) return "lead_capture";
+ if((f?.commercialSignal??0)>=.65 && o.monetizationHypotheses.includes("affiliate")) return "comparison";
+ if((f?.painStrength??0)>=.7) return "interactive_tool";
+ if((f?.buyerSignal??0)>=.5) return "lead_capture";
  return "landing_page";
 }
 function threshold(type:ValidationPlan["type"]){return type==="lead_capture"?3:type==="comparison"||type==="affiliate_test"?2:1;}
