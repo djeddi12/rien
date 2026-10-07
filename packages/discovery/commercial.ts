@@ -23,10 +23,15 @@ function words(text:string):string[]{
 function keyTerms(e:Evidence):Set<string>{
  const title=String(e.payload.title??"");
  const body=String(e.payload.body??"");
- const all=words(title+" "+body);
+ const titleWords=words(title);
+ const bodyWords=words(body);
  const counts=new Map<string,number>();
- for(const word of all) counts.set(word,(counts.get(word)??0)+1);
- return new Set([...counts.entries()].sort((a,b)=>b[1]-a[1]).slice(0,12).map(([x])=>x));
+ for(const word of titleWords) counts.set(word,(counts.get(word)??0)+3);
+ for(const word of bodyWords) counts.set(word,(counts.get(word)??0)+1);
+ return new Set([...counts.entries()]
+   .sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0]))
+   .slice(0,12)
+   .map(([x])=>x));
 }
 
 function similarity(a:Set<string>,b:Set<string>):number{
@@ -60,7 +65,10 @@ function clusterTitle(items:Evidence[],category:string):string{
  for(const item of items){
   for(const word of keyTerms(item)) counts.set(word,(counts.get(word)??0)+1);
  }
- const terms=[...counts.entries()].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0])).slice(0,3).map(([x])=>x);
+ const terms=[...counts.entries()]
+   .sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0]))
+   .filter(([x])=>!["cheaper","hosted","option","clear","pain","buyers"].includes(x))
+   .slice(0,3).map(([x])=>x);
  const label=terms.length?terms.join(" "):category;
  const buyer=items.some(e=>contains(JSON.stringify(e.payload),["alternative","vs","pricing","price","buy","purchase"]));
  const pain=items.some(e=>contains(JSON.stringify(e.payload),PAIN_TERMS));
