@@ -10,3 +10,5 @@ export type ValidationPlan={opportunityId:string;type:ValidationType;hypothesis:
 export type Experiment={id:string;opportunityId:string;hypothesis:string;action:string;successMetric:string;minimumObservationDays:number;stopCondition:string;approvalRequired:boolean};
 export type Outcome={experimentId:string;visits?:number;clicks?:number;leads?:number;conversions?:number;revenue?:number;cost?:number;attributionQuality:"high"|"medium"|"low"|"unknown";observedAt:string};
 export type LearningAdjustment={experimentId:string;opportunityId:string;priorConfidence:number;newConfidence:number;confidenceDelta:number;sampleSize:number;signalRate?:number;revenuePerVisit?:number;costPerVisit?:number;outcomeQuality:"strong"|"moderate"|"weak"|"insufficient";reasons:string[];observedAt:string};
+export type NextAction="validate"|"build"|"expand"|"refresh"|"watch"|"kill";
+export type NextBestAction={opportunityId:string;action:NextAction;priority:number;reason:string[];confidence:number;approvalRequired:boolean;validationType?:ValidationType;observedOutcome?:LearningAdjustment};
