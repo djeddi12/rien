@@ -1,5 +1,6 @@
 export type Evidence={id:string;source:string;sourceUrl?:string;sourceType:string;capturedAt:string;expiresAt?:string;confidence:number;payload:Record<string,unknown>};
-export type Opportunity={id:string;title:string;audience:string;category:string;evidenceIds:string[];monetizationHypotheses:string[];createdAt:string;confidence:number};
+export type OpportunityFingerprint={problem:string;buyer:string;jobToBeDone:string;currentWorkaround:string;painStrength:number;buyerSignal:number;commercialSignal:number;repeatability:number;evidenceFreshness:number;evidenceDiversity:number;contradictionRisk:number;technicalNoiseRatio:number;quality:number};
+export type Opportunity={id:string;title:string;audience:string;category:string;evidenceIds:string[];monetizationHypotheses:string[];createdAt:string;confidence:number;fingerprint?:OpportunityFingerprint};
 export type Offer={id:string;merchant:string;product:string;category:string;model:"affiliate"|"lead_gen"|"saas"|"digital_product"|"other";price?:number;recurring?:boolean;commission?:number;currency?:string;geography?:string[];termsUrl?:string;lastVerifiedAt:string};
 export type OfferMatch={opportunityId:string;offerId:string;fitScore:number;economicsScore:number;evidenceIds:string[];risks:string[];verifiedAt:string};
 export type AssetType="page"|"comparison"|"calculator"|"matcher"|"video_brief"|"lead_capture"|"email_sequence"|"interactive_tool";
