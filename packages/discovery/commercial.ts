@@ -17,7 +17,7 @@ function contains(text:string,terms:string[]){const t=text.toLowerCase();return 
 
 function words(text:string):string[]{
  return text.toLowerCase().replace(/https?:\/\/\S+/g," ").split(/[^a-z0-9]+/)
-   .filter(x=>x.length>=4&&!STOP_WORDS.has(x));
+   .filter(x=>x.length>=3&&!STOP_WORDS.has(x));
 }
 
 function keyTerms(e:Evidence):Set<string>{
