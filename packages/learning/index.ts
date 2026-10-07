@@ -43,9 +43,11 @@ export function learnFromOutcome({opportunity,outcome}:{opportunity:Opportunity;
   if(outcome.attributionQuality==="high") reasons.push("revenue_attribution_high");
   else reasons.push("revenue_not_used_for_strong_update");
  }
- if(revenuePerVisit!==undefined&&outcome.cost!==undefined&&outcome.attributionQuality==="high"){
-  if(outcome.revenue>outcome.cost) delta+=Math.min(.03,((outcome.revenue-outcome.cost)/Math.max(1,outcome.revenue))*.03);
-  else if(outcome.revenue<outcome.cost) delta-=Math.min(.03,((outcome.cost-outcome.revenue)/Math.max(1,outcome.cost))*.03);
+ const revenue=outcome.revenue;
+ const cost=outcome.cost;
+ if(revenue!==undefined&&cost!==undefined&&outcome.attributionQuality==="high"){
+  if(revenue>cost) delta+=Math.min(.03,((revenue-cost)/Math.max(1,revenue))*.03);
+  else if(revenue<cost) delta-=Math.min(.03,((cost-revenue)/Math.max(1,cost))*.03);
  }
  delta=Math.max(-.15,Math.min(.15,delta));
  const quality=visits>=300?"strong":visits>=100?"moderate":visits>=30?"weak":"insufficient";
