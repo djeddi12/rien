@@ -4,9 +4,10 @@ import {discoverGitHubIssues} from "./github";
 import {discoverCommercialOpportunities} from "./commercial";
 import {matchOffer} from "../offers";
 import {scoreOpportunity} from "../scoring";
+import {planValidation} from "../validation";
 
 export type LiveDiscoveryConfig={queries:string[];perQuery?:number;token?:string;target?:number};
-export type LiveBenchmarkRow={rank:number;title:string;category:string;confidence:number;score:number;decision:"build"|"watch"|"reject";evidenceCount:number;bestOffer?:string;bestOfferScore?:number;sourceUrl?:string};
+export type LiveBenchmarkRow={rank:number;title:string;category:string;confidence:number;score:number;decision:"build"|"watch"|"reject";evidenceCount:number;bestOffer?:string;bestOfferScore?:number;sourceUrl?:string;validationType:string;validationThreshold:number};
 
 function classifyCategory(text:string){
  const t=text.toLowerCase();
@@ -43,6 +44,6 @@ export async function runLiveBenchmark(config:LiveDiscoveryConfig,offers:Offer[]
   const related=evidence.filter(e=>o.evidenceIds.includes(e.id));
   const commercial=Math.max(0,...related.map(e=>Number(e.payload.commercialIntent??0)));
   const score=scoreOpportunity({demand:o.confidence*100,commercialIntent:commercial*100,competition:50,affiliateValue:best?.economicsScore??0,contentGap:70,serpOpportunity:60,executionCost:70});
-  return {rank:0,title:o.title,category:o.category,confidence:o.confidence,score:score.total,decision:score.decision,evidenceCount:related.length,bestOffer:best?.offerId,bestOfferScore:best?Math.round((best.fitScore+best.economicsScore)/2):undefined,sourceUrl:String(related[0]?.sourceUrl??"")};
+  return {rank:0,title:o.title,category:o.category,confidence:o.confidence,score:score.total,decision:score.decision,evidenceCount:related.length,bestOffer:best?.offerId,bestOfferScore:best?Math.round((best.fitScore+best.economicsScore)/2):undefined,sourceUrl:String(related[0]?.sourceUrl??""),validationType:planValidation(o).type,validationThreshold:planValidation(o).passThreshold};
  }).sort((a,b)=>b.score-a.score).slice(0,10).map((x,i)=>({...x,rank:i+1}));
 }
