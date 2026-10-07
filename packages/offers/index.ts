@@ -7,7 +7,7 @@ function semanticFit(opportunity:Opportunity,offer:Offer):number{
  const source=new Set(tokens([opportunity.title,opportunity.audience,opportunity.category].join(" ")));
  const target=new Set(tokens([offer.product,offer.merchant,offer.category].join(" ")));
  const overlap=[...source].filter(x=>target.has(x)).length;
- const category=opportunity.category.toLowerCase()===offer.category.toLowerCase()?30:0;
+ const category=opportunity.category.toLowerCase()===offer.category.toLowerCase()?70:0;
  const model=opportunity.monetizationHypotheses.includes(offer.model)?15:0;
  return Math.min(100,Math.round(40*Math.min(1,overlap/3)+category+model+15));
 }
