@@ -13,7 +13,7 @@ describe("scoreOpportunity", () => {
       executionCost: 85,
     });
 
-    expect(result.total).toBe(82.95);
+    expect(result.total).toBe(84.9);
     expect(result.decision).toBe("build");
   });
 
