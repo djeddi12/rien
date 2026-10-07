@@ -5,5 +5,7 @@ export type Offer={id:string;merchant:string;product:string;category:string;mode
 export type OfferMatch={opportunityId:string;offerId:string;fitScore:number;economicsScore:number;evidenceIds:string[];risks:string[];verifiedAt:string};
 export type AssetType="page"|"comparison"|"calculator"|"matcher"|"video_brief"|"lead_capture"|"email_sequence"|"interactive_tool";
 export type AssetPlan={opportunityId:string;assets:AssetType[];rationale:string[]};
+export type ValidationType="landing_page"|"comparison"|"interactive_tool"|"lead_capture"|"affiliate_test";
+export type ValidationPlan={opportunityId:string;type:ValidationType;hypothesis:string;action:string;successMetric:string;passThreshold:number;minimumObservationDays:number;stopCondition:string;estimatedEffort:"low"|"medium"|"high";approvalRequired:boolean;evidenceIds:string[]};
 export type Experiment={id:string;opportunityId:string;hypothesis:string;action:string;successMetric:string;minimumObservationDays:number;stopCondition:string;approvalRequired:boolean};
 export type Outcome={experimentId:string;visits?:number;clicks?:number;leads?:number;conversions?:number;revenue?:number;cost?:number;attributionQuality:"high"|"medium"|"low"|"unknown";observedAt:string};
