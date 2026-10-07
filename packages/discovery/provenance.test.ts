@@ -19,7 +19,7 @@ describe("commercial discovery",()=>{
    expect(sourceTitles.has(opportunity.title)).toBe(true);
    expect(opportunity.title).toBe(opportunity.sourceTitle);
    expect(["alternative-seeking","pain-driven","comparison","unclear"]).toContain(opportunity.intent);
-   expect(opportunity.keywords.length).toBeGreaterThan(0);
+   expect((opportunity.keywords??[]).length).toBeGreaterThan(0);
    expect(opportunity.title).not.toMatch(/for buyers with a clear pain|alternatives and buying options|workflow pain and solution gap|commercial opportunity$/i);
   }
  });
