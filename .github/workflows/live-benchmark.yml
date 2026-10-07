@@ -2,6 +2,14 @@ name: Live Opportunity Benchmark
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "packages/**"
+      - "scripts/live-benchmark.ts"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/live-benchmark.yml"
   schedule:
     - cron: "17 5 * * 1"
 
@@ -16,7 +24,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: npm install
+          cache: npm
+      - run: npm ci
       - name: Run live GitHub opportunity benchmark
         env:
           GITHUB_TOKEN: ${{ github.token }}
