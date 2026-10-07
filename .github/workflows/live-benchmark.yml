@@ -1,0 +1,29 @@
+name: Live Opportunity Benchmark
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 5 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - name: Run live GitHub opportunity benchmark
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: npx --yes tsx scripts/live-benchmark.ts
+      - name: Publish benchmark artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: live-opportunity-benchmark
+          path: live-benchmark.json
+          retention-days: 30
