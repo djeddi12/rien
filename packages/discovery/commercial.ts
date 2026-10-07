@@ -4,6 +4,7 @@ import {adversarialJudge,isActionable} from "../judge";
 import {buildOpportunityFingerprint} from "../fingerprint";
 
 const BUYING_TERMS=["best","alternative","alternatives","vs","pricing","price","buy","purchase","software","tool","service","for agencies","for business","paid","customer","enterprise"];
+const ALTERNATIVE_TERMS=["alternative","alternatives","vs","versus","replace","replacement"];
 const PAIN_TERMS=["need","wish","missing","slow","broken","expensive","difficult","pain","cannot","can't","manual","workaround","replace","request"];
 const STOP_WORDS=new Set([
  "the","and","for","with","from","that","this","have","has","had","are","was","were","will","would","could","should",
@@ -61,22 +62,20 @@ function clusterEvidence(items:Evidence[]):Evidence[][]{
  return clusters.map(x=>x.items);
 }
 
-function clusterTitle(items:Evidence[],category:string):string{
+function clusterIntent(items:Evidence[]):{intent:Opportunity["intent"];segment?:string;keywords:string[]}{
+ const text=items.map(e=>JSON.stringify(e.payload)).join(" ");
+ const buyer=contains(text,BUYING_TERMS);
+ const pain=contains(text,PAIN_TERMS);
+ const explicitAlternative=contains(text,ALTERNATIVE_TERMS);
+ let intent:Opportunity["intent"]="unclear";
+ if(explicitAlternative) intent="alternative-seeking";
+ else if(pain) intent="pain-driven";
+ else if(buyer) intent="comparison";
+ const segment=clusterAudience(items);
  const counts=new Map<string,number>();
- for(const item of items){
-  for(const word of keyTerms(item)) counts.set(word,(counts.get(word)??0)+1);
- }
- const terms=[...counts.entries()]
-   .sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0]))
-   .filter(([x])=>!["cheaper","hosted","option","clear","pain","buyers"].includes(x))
-   .slice(0,3).map(([x])=>x);
- const label=terms.length?terms.join(" "):category;
- const buyer=items.some(e=>contains(JSON.stringify(e.payload),["alternative","vs","pricing","price","buy","purchase"]));
- const pain=items.some(e=>contains(JSON.stringify(e.payload),PAIN_TERMS));
- if(buyer&&pain)return `${label} alternatives for buyers with a clear pain`;
- if(buyer)return `${label} alternatives and buying options`;
- if(pain)return `${label} workflow pain and solution gap`;
- return `${label} commercial opportunity`;
+ for(const item of items) for(const word of keyTerms(item)) counts.set(word,(counts.get(word)??0)+1);
+ const keywords=[...counts.entries()].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0])).slice(0,5).map(([x])=>x);
+ return {intent,segment,keywords};
 }
 
 function clusterAudience(items:Evidence[]):string{
@@ -94,6 +93,13 @@ export function enrichCommercialIntent(e:Evidence):Evidence{
  return {...e,payload:{...e.payload,commercialIntent:Math.round(intent*100)/100,signals:{buyerIntent:buyer,painSignal:pain}}};
 }
 
+/**
+ * ARCHITECTURAL CONTRACT:
+ * Discovery preserves source provenance. It MUST NOT turn evidence into
+ * marketing copy. Opportunity.title/sourceTitle are verbatim source evidence.
+ * Commercial interpretation lives in intent, segment and keywords.
+ * Marketing titles belong to a later, explicitly separate stage.
+ */
 export function discoverCommercialOpportunities(evidence:Evidence[]):Opportunity[]{
  const enriched=evidence.map(enrichCommercialIntent).filter(e=>Number(e.payload.commercialIntent??0)>=.35);
  const byCategory=new Map<string,Evidence[]>();
@@ -106,10 +112,16 @@ export function discoverCommercialOpportunities(evidence:Evidence[]):Opportunity
  const opportunities:Opportunity[]=[];
  for(const [category,categoryItems] of byCategory){
   for(const items of clusterEvidence(categoryItems)){
+   const commercial=clusterIntent(items);
+   const sourceTitle=String(items[0]?.payload.title??"");
+   if(!sourceTitle) continue;
    const opportunity=mineOpportunity({
-    title:clusterTitle(items,category),
+    title:sourceTitle,
     audience:clusterAudience(items),
     category,
+    intent:commercial.intent,
+    segment:commercial.segment,
+    keywords:commercial.keywords,
     evidence:items,
     monetizationHypotheses:["affiliate","lead_gen","digital_product"]
    });
