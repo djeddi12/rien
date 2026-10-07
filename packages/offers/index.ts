@@ -15,7 +15,7 @@ function semanticFit(opportunity:Opportunity,offer:Offer):number{
 function economics(offer:Offer):number{
  const commission=offer.commission??0;
  const recurring=offer.recurring?15:0;
- const value=commission<=1?commission*70:Math.min(70,20+Math.log10(1+commission)*18);
+ const value=commission<=1?commission*100:Math.min(100,20+Math.log10(1+commission)*18);
  return Math.round(Math.min(100,value+recurring));
 }
 
