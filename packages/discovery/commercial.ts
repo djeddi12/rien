@@ -1,6 +1,7 @@
 import type {Evidence,Opportunity} from "../core";
 import {mineOpportunity} from "../opportunities";
 import {adversarialJudge,isActionable} from "../judge";
+import {buildOpportunityFingerprint} from "../fingerprint";
 
 const BUYING_TERMS=["best","alternative","alternatives","vs","pricing","price","buy","purchase","software","tool","service","for agencies","for business","paid","customer","enterprise"];
 const PAIN_TERMS=["need","wish","missing","slow","broken","expensive","difficult","pain","cannot","can't","manual","workaround","replace","request"];
@@ -114,7 +115,9 @@ export function discoverCommercialOpportunities(evidence:Evidence[]):Opportunity
    });
    const judgment=adversarialJudge(opportunity,enriched);
    if(isActionable(judgment)){
-    opportunities.push({...opportunity,confidence:Math.round(opportunity.confidence*judgment.confidence*100)/100});
+    const fingerprint=buildOpportunityFingerprint(items);
+    const confidence=Math.round(opportunity.confidence*judgment.confidence*(.70+.30*fingerprint.quality)*100)/100;
+    opportunities.push({...opportunity,confidence,fingerprint});
    }
   }
  }
