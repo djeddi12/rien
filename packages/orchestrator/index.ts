@@ -55,9 +55,8 @@ export function discoverAndPlan(evidence:Evidence[],offers:Offer[]):OpportunityR
 export function learnAndReplan(run:OpportunityRun,outcome:Outcome):OutcomeRun{
  const learning=learnFromOutcome({opportunity:run.opportunity,outcome});
  const updated={...run.opportunity,confidence:learning.newConfidence};
- const next=buildOpportunityRun(updated,run.matches.map(m=>({
-  id:m.offerId,merchant:"",product:"",category:"",model:"other",lastVerifiedAt:""
- } as Offer));
- const nextAction=chooseNextAction({opportunity:updated,score:next.score,validation:next.validation,learning});
- return {...run,outcome,learning,nextAction};
+ const score=scoreFor(updated,run.matches);
+ const validation=planValidation(updated);
+ const nextAction=chooseNextAction({opportunity:updated,score,validation,learning});
+ return {...run,opportunity:updated,outcome,learning,nextAction};
 }
