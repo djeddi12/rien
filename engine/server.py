@@ -34,6 +34,15 @@ def connect():
       product_id TEXT, created_at INTEGER NOT NULL, referrer TEXT NOT NULL DEFAULT '',
       user_agent TEXT NOT NULL DEFAULT '', detail_json TEXT NOT NULL DEFAULT '{}'
     )""")
+    # Shared contract: Opportunity Engine can push evidence-backed candidates here.
+    conn.execute("""CREATE TABLE IF NOT EXISTS opportunities (
+      id TEXT PRIMARY KEY, title TEXT NOT NULL, niche TEXT NOT NULL DEFAULT '',
+      score INTEGER NOT NULL CHECK(score BETWEEN 0 AND 100),
+      status TEXT NOT NULL DEFAULT 'detected',
+      evidence_json TEXT NOT NULL DEFAULT '[]',
+      source_url TEXT NOT NULL DEFAULT '',
+      created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL
+    )""")
     conn.commit()
     return conn
 
@@ -91,18 +100,60 @@ class Handler(SimpleHTTPRequestHandler):
             self.send_header("Cache-Control", "no-store")
             self.end_headers()
             return
+        if path == "/api/admin/opportunities":
+            if not self.admin_ok(): return self.send_json(401, {"error":"Admin token required"})
+            with connect() as db:
+                rows = db.execute("SELECT * FROM opportunities ORDER BY score DESC, updated_at DESC LIMIT 200").fetchall()
+            result = []
+            for row in rows:
+                item = dict(row)
+                item["evidence"] = json.loads(item.pop("evidence_json"))
+                result.append(item)
+            return self.send_json(200, {"opportunities": result})
         if path == "/api/admin/summary":
             if not self.admin_ok(): return self.send_json(401, {"error":"Admin token required"})
             with connect() as db:
                 products = db.execute("SELECT COUNT(*) n FROM products WHERE active=1").fetchone()["n"]
                 clicks = db.execute("SELECT COUNT(*) n FROM events WHERE event_type='outbound_click'").fetchone()["n"]
+                opportunities = db.execute("SELECT COUNT(*) n FROM opportunities").fetchone()["n"]
                 recent = db.execute("SELECT event_type,product_id,created_at FROM events ORDER BY id DESC LIMIT 30").fetchall()
-            return self.send_json(200, {"active_products":products,"tracked_outbound_clicks":clicks,"recent_events":[dict(r) for r in recent]})
+            return self.send_json(200, {"active_products":products,"tracked_outbound_clicks":clicks,"opportunities":opportunities,"recent_events":[dict(r) for r in recent]})
         return super().do_GET()
     def do_POST(self):
         path = unquote(urlparse(self.path).path)
         if path.startswith("/api/") and not self.admin_ok():
             return self.send_json(401, {"error":"Admin token required. Set SIGNALSHELF_ADMIN_TOKEN and send it as Bearer token."})
+        if path == "/api/admin/opportunities":
+            try: item = self.read_json()
+            except Exception: return self.send_json(400, {"error":"Invalid JSON"})
+            title = item.get("title")
+            score = item.get("score")
+            if not isinstance(title, str) or not title.strip():
+                return self.send_json(400, {"error":"title is required"})
+            if isinstance(score, bool) or not isinstance(score, int) or not 0 <= score <= 100:
+                return self.send_json(400, {"error":"score must be an integer from 0 to 100"})
+            status = item.get("status", "detected")
+            if status not in {"detected","reviewed","approved","rejected"}:
+                return self.send_json(400, {"error":"status must be detected, reviewed, approved, or rejected"})
+            evidence = item.get("evidence", [])
+            if not isinstance(evidence, (list, dict)):
+                return self.send_json(400, {"error":"evidence must be a list or object"})
+            source_url = item.get("source_url", "")
+            if not isinstance(source_url, str) or (source_url and not source_url.startswith("https://")):
+                return self.send_json(400, {"error":"source_url must be empty or an HTTPS URL"})
+            opportunity_id = str(item.get("id") or ("opp_" + secrets.token_hex(6)))[:100]
+            now = int(time.time())
+            with connect() as db:
+                db.execute("""INSERT INTO opportunities(id,title,niche,score,status,evidence_json,source_url,created_at,updated_at)
+                  VALUES(?,?,?,?,?,?,?,?,?)
+                  ON CONFLICT(id) DO UPDATE SET title=excluded.title,niche=excluded.niche,score=excluded.score,
+                  status=excluded.status,evidence_json=excluded.evidence_json,source_url=excluded.source_url,updated_at=excluded.updated_at""",
+                  (opportunity_id,title.strip()[:200],str(item.get("niche",""))[:120],score,status,
+                   json.dumps(evidence,ensure_ascii=False)[:12000],source_url,now,now))
+                db.execute("INSERT INTO events(event_type,created_at,detail_json) VALUES(?,?,?)",
+                  ("opportunity_imported",now,json.dumps({"opportunity_id":opportunity_id,"score":score,"status":status},ensure_ascii=False)))
+                db.commit()
+            return self.send_json(201, {"ok":True,"id":opportunity_id,"message":"Opportunity stored; this does not imply a verified sale or validated demand."})
         if path == "/api/admin/products":
             try: p = self.read_json()
             except Exception: return self.send_json(400, {"error":"Invalid JSON"})
