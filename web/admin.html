@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SignalShelf — Operator</title><link rel="stylesheet" href="/styles.css"><style>
+.admin-wrap{max-width:980px;margin:48px auto;padding:0 24px 70px}.admin-head{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:30px}.admin-head h1{font:700 38px Manrope,sans-serif;letter-spacing:-.06em;margin:12px 0}.admin-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:24px;margin:18px 0}.admin-card h2{font:700 18px Manrope;margin:0 0 16px}.admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.field{display:flex;flex-direction:column;gap:7px;font-size:11px;color:#657267}.field input,.field select,.field textarea{width:100%;border:1px solid #dce3d9;border-radius:8px;padding:12px;font:12px "DM Sans",sans-serif;background:#fbfcfa;color:var(--ink)}.field textarea{min-height:90px;resize:vertical}.field.full{grid-column:1/-1}.admin-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.notice{font-size:12px;line-height:1.7;color:#627065;background:#f0f5eb;padding:12px 14px;border-radius:9px;white-space:pre-wrap}.notice.error{background:#fff0e9;color:#854c32}.stats{display:flex;gap:12px;flex-wrap:wrap}.stat{background:#f1f5ed;border-radius:10px;padding:15px 18px;min-width:140px}.stat strong{display:block;font:700 25px Manrope}.stat span{font-size:10px;color:#6e7b70}.admin-muted{font-size:11px;color:#7b867d;line-height:1.7}.admin-footer{display:flex;justify-content:space-between;gap:15px;margin-top:25px;font-size:11px;color:#7c877e}@media(max-width:600px){.admin-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.admin-card{padding:17px}.admin-head{align-items:flex-start;flex-direction:column}}
+</style></head>
+<body>
+<div class="announcement"><span class="pulse"></span> LOCAL OPERATOR CONSOLE <span class="announcement-note">Never share your admin token.</span></div>
+<header class="site-header"><a class="brand" href="/"><span class="brand-mark">S</span><span>signal<span class="brand-light">shelf</span><small>THE PRACTICAL TOOL DIRECTORY</small></span></a><a class="header-cta" href="/">← View storefront</a></header>
+<main class="admin-wrap">
+<div class="admin-head"><div><div class="eyebrow">OPERATIONS / CATALOG</div><h1>Offer control room.</h1><p class="admin-muted">Add only offers you have personally verified. The token is kept for this browser session only.</p></div><button class="button button-secondary" id="refresh">Refresh metrics ↻</button></div>
+<section class="admin-card"><h2>Authenticate</h2><div class="admin-grid"><label class="field full">Admin bearer token<input id="token" type="password" autocomplete="current-password" placeholder="Paste SIGNALSHELF_ADMIN_TOKEN"></label></div><div class="admin-actions" style="margin-top:14px"><button class="button button-primary" id="connect">Connect to local API →</button><button class="button button-secondary" id="disconnect">Forget token</button></div><p class="admin-muted">Use only on the computer running the local server. Do not expose this API to the public internet.</p></section>
+<section class="admin-card"><h2>Live ledger</h2><div class="stats"><div class="stat"><strong id="stat-products">—</strong><span>Active offers</span></div><div class="stat"><strong id="stat-clicks">—</strong><span>Tracked outbound clicks</span></div></div><p id="summary-message" class="admin-muted">Connect to load metrics.</p></section>
+<section class="admin-card"><h2>Add verified offer</h2><form id="offer-form"><div class="admin-grid">
+<label class="field">Product name *<input name="name" required maxlength="120"></label>
+<label class="field">Vendor / brand *<input name="vendor" required maxlength="120"></label>
+<label class="field">Category *<select name="category" required><option>AI & writing</option><option>SEO & growth</option><option>Productivity</option><option>Automation</option><option>Developer tools</option><option>Other</option></select></label>
+<label class="field">Price label<input name="price_label" value="See vendor" maxlength="80"></label>
+<label class="field full">Factual description *<textarea name="description" required maxlength="1000" placeholder="Describe what the product does. Avoid unsupported performance claims."></textarea></label>
+<label class="field full">Actual affiliate tracking URL *<input name="affiliate_url" type="url" required placeholder="https://..."></label>
+<label class="field">Vendor product URL *<input name="vendor_url" type="url" required placeholder="https://..."></label>
+<label class="field">Source / terms URL *<input name="source_url" type="url" required placeholder="Official affiliate terms or product source"></label>
+<label class="field full">Tags (comma separated)<input name="tags" placeholder="analytics, SEO, reporting"></label>
+<label class="field">Verified date<input name="verified_at" type="date"></label>
+<label class="field">Feature this offer<select name="featured"><option value="false">No</option><option value="true">Yes</option></select></label>
+</div><div class="admin-actions" style="margin-top:18px"><button class="button button-primary" type="submit">Add offer to catalog ↗</button><span class="admin-muted">Affiliate links stay on the server; the storefront routes clicks through the local tracker.</span></div></form><p id="form-message" class="notice" hidden></p></section>
+<div class="admin-footer"><a href="/">← Back to SignalShelf</a><span>Purchases and commissions must be confirmed by the affiliate network.</span></div>
+</main>
+<script src="/admin.js" defer></script>
+</body></html>
