@@ -82,7 +82,10 @@ class StoreApiTests(unittest.TestCase):
 
         # Use a non-following opener so the 302 is tested without contacting a vendor.
         from urllib.request import HTTPRedirectHandler, build_opener
-        opener = build_opener(HTTPRedirectHandler())
+        class NoRedirect(HTTPRedirectHandler):
+            def redirect_request(self, req, fp, code, msg, headers, newurl):
+                return None
+        opener = build_opener(NoRedirect())
         request = Request(self.base + "/api/click/" + created["id"])
         with self.assertRaises(HTTPError) as error:
             opener.open(request)
