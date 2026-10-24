@@ -2,6 +2,7 @@
 """Small standard-library server for SignalShelf. Python 3.11+; SQLite persists locally."""
 from __future__ import annotations
 import json, os, secrets, sqlite3, time
+from contextlib import closing
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlparse, unquote
@@ -73,7 +74,7 @@ class Handler(SimpleHTTPRequestHandler):
         if path == "/api/health":
             return self.send_json(200, {"ok": True, "service": "signalshelf", "database": str(DB_PATH.name)})
         if path == "/api/products":
-            with connect() as db:
+            with closing(connect()) as db:
                 rows = db.execute("SELECT * FROM products WHERE active=1 ORDER BY featured DESC, added_at DESC").fetchall()
             return self.send_json(200, {"products": [product_dict(r) for r in rows]})
         if path.startswith("/api/click/"):
