@@ -15,7 +15,7 @@ function render(){
  else items.sort((a,b)=>(b.featured?1:0)-(a.featured?1:0));
  $("#product-count").textContent=state.products.length+" "+(state.products.length===1?"offer":"offers");
  grid.innerHTML=items.map((p,i)=>{
-  const url=safeUrl(p.affiliate_url||"");
+  const url=p.has_affiliate_url ? "/api/click/"+encodeURIComponent(p.id) : "";
   const demo=Boolean(p.demo)||!url;
   return `<article class="product-card">
    <div class="product-visual ${palette[i%palette.length]}"><span class="product-category">${esc(p.category||"Other")}</span>${demo?'<span class="product-badge">DEMO / UNVERIFIED</span>':""}<span class="product-glyph">${esc(p.glyph||glyphs[i%glyphs.length])}</span></div>
