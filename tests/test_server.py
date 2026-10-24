@@ -34,6 +34,15 @@ class StoreApiTests(unittest.TestCase):
         cls.db_patch.stop()
         cls.tmp.cleanup()
 
+    def setUp(self):
+        db = server.connect()
+        try:
+            db.execute("DELETE FROM events")
+            db.execute("DELETE FROM products")
+            db.commit()
+        finally:
+            db.close()
+
     def get_json(self, path, token=None):
         headers = {}
         if token:
