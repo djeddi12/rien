@@ -41,6 +41,8 @@ def product_dict(row):
     p["tags"] = json.loads(p.pop("tags_json"))
     p["featured"] = bool(p["featured"])
     p["demo"] = bool(p["demo"])
+    p["has_affiliate_url"] = bool(p.get("affiliate_url")) and not p["demo"]
+    p.pop("affiliate_url", None)  # keep tracked destinations behind the redirect endpoint
     p.pop("active", None)
     return p
 
