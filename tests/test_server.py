@@ -39,6 +39,7 @@ class StoreApiTests(unittest.TestCase):
         try:
             db.execute("DELETE FROM events")
             db.execute("DELETE FROM products")
+            db.execute("DELETE FROM opportunities")
             db.commit()
         finally:
             db.close()
@@ -69,6 +70,33 @@ class StoreApiTests(unittest.TestCase):
         with self.assertRaises(HTTPError) as error:
             self.get_json("/api/admin/summary")
         self.assertEqual(error.exception.code, 401)
+
+    def test_opportunity_ingestion_requires_admin_and_validates_score(self):
+        with self.assertRaises(HTTPError) as error:
+            self.post_json("/api/admin/opportunities", {"title": "Test", "score": 90})
+        self.assertEqual(error.exception.code, 401)
+        with self.assertRaises(HTTPError) as error:
+            self.post_json("/api/admin/opportunities", {"title": "Test", "score": 101}, "test-secret")
+        self.assertEqual(error.exception.code, 400)
+
+    def test_import_opportunity_and_read_it_back(self):
+        payload = {
+            "id": "opp_test_1",
+            "title": "Compare lightweight SEO tools",
+            "niche": "SEO & growth",
+            "score": 82,
+            "status": "reviewed",
+            "evidence": [{"source": "https://example.com/report", "note": "test evidence"}],
+            "source_url": "https://example.com/report"
+        }
+        status, result = self.post_json("/api/admin/opportunities", payload, "test-secret")
+        self.assertEqual(status, 201)
+        self.assertEqual(result["id"], "opp_test_1")
+        _, listing = self.get_json("/api/admin/opportunities", "test-secret")
+        self.assertEqual(listing["opportunities"][0]["title"], payload["title"])
+        self.assertEqual(listing["opportunities"][0]["evidence"], payload["evidence"])
+        _, summary = self.get_json("/api/admin/summary", "test-secret")
+        self.assertEqual(summary["opportunities"], 1)
 
     def test_add_offer_and_record_click_without_exposing_destination(self):
         product = {
